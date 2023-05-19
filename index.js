@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,12 +25,49 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+const addingCollection = client.db('toyZone').collection('addings');
+
+app.get('/alltoy', async(req, res)=>{
+  const cursor = addingCollection.find();
+  const result = await cursor.toArray();
+  res.send(result)
+})
+
+
+app.get('/myToy', async(req, res)=>{
+console.log(req.query.email);
+let query ={}
+if(req.query?.email){
+  query = {email: req.query.email}
+}
+const result = await addingCollection.find(query).toArray();
+res.send(result);
+})
+
+
+
+app.post('/addToy', async(req, res) => {
+  const adding = req.body;
+  const result = await addingCollection.insertOne(adding)
+  res.send(result)
+  // console.log(adding);
+})
+
+app.delete('/addToy/:id', async (req, res) =>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await addingCollection.deleteOne(query);
+  res.send(result);
+})
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
