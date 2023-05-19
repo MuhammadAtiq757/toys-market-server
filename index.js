@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
 const addingCollection = client.db('toyZone').collection('addings');
 
@@ -46,6 +46,13 @@ res.send(result);
 })
 
 
+app.get('/toyDetails/:id', async(req, res)=>{
+  const id = req.params.id;
+  const query = {_id : new ObjectId(id)};
+  const result = await addingCollection.findOne(query);
+  res.send(result);
+})
+
 
 app.post('/addToy', async(req, res) => {
   const adding = req.body;
@@ -58,7 +65,7 @@ app.delete('/addToy/:id', async (req, res) =>{
   const id = req.params.id;
   const query = {_id: new ObjectId(id)}
   const result = await addingCollection.deleteOne(query);
-  res.send(result);
+  res.send(result)
 })
 
 
