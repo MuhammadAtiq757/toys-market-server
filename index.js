@@ -28,6 +28,30 @@ async function run() {
 
 const addingCollection = client.db('toyZone').collection('addings');
 
+
+const indexKeys = { name: 1 }; 
+const indexOptions = { name: "name" }; 
+const results = await addingCollection.createIndex(indexKeys, indexOptions);
+
+// console.log(result);
+
+
+app.get("/findName/:text", async (req, res) => {
+  const text = req.params.text;
+  const result = await addingCollection
+    .find({
+      $or: [
+        { name: { $regex: text, $options: "i" } },
+       
+      ],
+    })
+    .toArray();
+  res.send(result);
+});
+
+
+
+
 app.get('/alltoy', async(req, res)=>{
   const cursor = addingCollection.find();
   const result = await cursor.toArray();
@@ -44,6 +68,26 @@ if(req.query?.email){
 const result = await addingCollection.find(query).toArray();
 res.send(result);
 })
+
+app.put('/updateToy/:id', async(req, res)=>{
+  const id = req.params.id;
+  const body = req.body;
+  const query = {_id: new ObjectId(id)};
+  const option = {upsert: true};
+  const updateToy={
+    $set:{
+      price: body.price,
+      quantity: body.quantity,
+      detail: body.detail,
+    },
+  };
+  const result = await addingCollection.updateOne(query, updateToy, option);
+  res.send(result)
+})
+
+
+
+
 
 
 app.get('/toyDetails/:id', async(req, res)=>{
