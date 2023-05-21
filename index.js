@@ -1,12 +1,20 @@
 const express = require('express');
 const cors = require('cors');
+
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+const corsOptions ={
+  origin:'*', 
+  credentials:true,
+  optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json());
 
 
@@ -53,7 +61,7 @@ app.get("/findName/:text", async (req, res) => {
 
 
 app.get('/alltoy', async(req, res)=>{
-  const cursor = addingCollection.find();
+  const cursor = addingCollection.find.limit(20);
   const result = await cursor.toArray();
   res.send(result)
 })
@@ -68,6 +76,21 @@ if(req.query?.email){
 const result = await addingCollection.find(query).toArray();
 res.send(result);
 })
+
+app.get('/toyCategory/:category', async (req, res)=>{
+  const id = req.params.category;
+  const toys = await addingCollection.find({category: id}).limit(3).toArray()
+  res.send(toys)
+})
+
+
+
+
+
+
+
+
+
 
 app.put('/updateToy/:id', async(req, res)=>{
   const id = req.params.id;
