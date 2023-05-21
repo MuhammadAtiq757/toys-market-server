@@ -32,14 +32,14 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
+     client.connect();
 
 const addingCollection = client.db('toyZone').collection('addings');
 
 
-const indexKeys = { name: 1 }; 
-const indexOptions = { name: "name" }; 
-const results = await addingCollection.createIndex(indexKeys, indexOptions);
+// const indexKeys = { name: 1 }; 
+// const indexOptions = { name: "name" }; 
+// const results = await addingCollection.createIndex(indexKeys, indexOptions);
 
 // console.log(result);
 
@@ -61,7 +61,7 @@ app.get("/findName/:text", async (req, res) => {
 
 
 app.get('/alltoy', async(req, res)=>{
-  const cursor = addingCollection.find.();
+  const cursor = addingCollection.find();
   const result = await cursor.toArray();
   res.send(result)
 })
@@ -74,6 +74,7 @@ if(req.query?.email){
   query = {email: req.query.email}
 }
 const result = await addingCollection.find(query).toArray();
+console.log(result)
 res.send(result);
 })
 
@@ -137,7 +138,7 @@ app.delete('/addToy/:id', async (req, res) =>{
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
