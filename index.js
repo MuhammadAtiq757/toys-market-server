@@ -61,7 +61,7 @@ app.get("/findName/:text", async (req, res) => {
 
 
 app.get('/alltoy', async(req, res)=>{
-  const cursor = addingCollection.find.limit(20);
+  const cursor = addingCollection.find.();
   const result = await cursor.toArray();
   res.send(result)
 })
